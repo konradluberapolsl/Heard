@@ -1,0 +1,12 @@
+{
+  "name": "Heard",
+  "displayName": "Heard",
+  "expo": {
+    "name": "Heard",
+    "slug": "Heard",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
