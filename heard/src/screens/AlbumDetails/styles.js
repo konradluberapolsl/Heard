@@ -5,7 +5,8 @@ import {theme} from "../../theme/Theme";
 const styles = StyleSheet.create({
     card: {
         marginTop: 10,
-        marginHorizontal: 10
+        marginHorizontal: 10,
+        marginBottom: 5,
     },
     detailsContainer: {
         flexDirection: "row",
@@ -32,8 +33,12 @@ const styles = StyleSheet.create({
     textInput:{
         marginVertical: 15,
         marginHorizontal: 25,
-
-
+    },
+    prompt: {
+        textAlign: "center",
+        marginTop: 15,
+        marginHorizontal: 7,
+        flexShrink: 1,
     }
 });
 

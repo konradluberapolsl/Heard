@@ -14,6 +14,7 @@ import {createStore, applyMiddleware} from "redux";
 import rootReducer from "./src/redux/reducers"
 import thunk from "redux-thunk";
 
+
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
 
@@ -22,6 +23,7 @@ const Stack = createStackNavigator();
 const store = createStore(rootReducer, applyMiddleware(thunk))
 
 export default function App() {
+
 
     const [loading, setLoading] = useState(true)
     const [user, setUser] = useState(null)

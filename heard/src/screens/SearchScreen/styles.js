@@ -11,6 +11,9 @@ const styles = StyleSheet.create({
     textInput:{
         marginBottom: 30,
         marginTop: 10
+    },
+    activityIndicator:{
+        flex: 1
     }
 });
 

@@ -3,16 +3,22 @@ import { IconButton, Card, Title, Paragraph } from 'react-native-paper'
 import {Image, StyleSheet, TouchableOpacity, View} from "react-native";
 import {theme} from "../theme/Theme";
 
-const SearchResultItem = ({item, onAddPress}) => (
-    <Card style={styles.item} onPress={() => console.log("Record pressed")}>
+export default function SearchResultItem ({item, onPress, onAddPress}) {
+
+    const name = item.title.split(' - ');
+    const title = name[1];
+    const artists = name[0].replace("*", "");
+
+
+    return (
+    <Card style={styles.item} onPress={onPress}>
         <View style={styles.container} >
 
-            <Image style={styles.thumbnail} source={{ uri: 'https://img.discogs.com/3KrlBcMxl3WOliT0TuxV6XgNBUw=/fit-in/600x600/filters:strip_icc()' +
-                    ':format(jpeg):mode_rgb():quality(90)/discogs-images/R-6736792-1549154079-2751.jpeg.jpg' }} />
+            <Image style={styles.thumbnail} source={{ uri: item.thumb }} />
 
             <View style={styles.textContainer}>
-                <Title style={styles.textTitle} >{item.title}</Title>
-                <Paragraph style={styles.textParagraph} >{item.artist}</Paragraph>
+                <Title style={styles.textTitle} >{title}</Title>
+                <Paragraph style={styles.textParagraph} >{artists}</Paragraph>
             </View>
             <IconButton
                 style={styles.button}
@@ -24,9 +30,9 @@ const SearchResultItem = ({item, onAddPress}) => (
         </View>
 
     </Card>
-);
+    )
+};
 
-export default SearchResultItem;
 
 const styles = StyleSheet.create({
 
@@ -50,7 +56,8 @@ const styles = StyleSheet.create({
         fontSize: 12
     },
     textContainer: {
-        marginStart: 10
+        marginStart: 10,
+        flexShrink: 1
     },
     thumbnail:{
         width: 75,

@@ -32,6 +32,32 @@ const styles = StyleSheet.create({
         marginVertical: 15,
         marginHorizontal: 25,
 
+    },
+    button: {
+        backgroundColor: theme.colors.primary,
+        marginHorizontal: 10,
+        marginBottom: 15,
+        marginTop: 15,
+        height: 48,
+        borderRadius: 5,
+        alignItems: "center",
+        justifyContent: 'center'
+    },
+    buttonTitle: {
+        color: 'white',
+        fontSize: 16,
+    },
+    datePicker: {
+        padding: 15
+    },
+    pickerButton:{
+        width: 85,
+        paddingVertical: 10,
+        marginHorizontal: 5,
+        backgroundColor: theme.colors.primary,
+        color: theme.colors.background,
+        textAlign: "center",
+        borderRadius: 5,
     }
 });
 

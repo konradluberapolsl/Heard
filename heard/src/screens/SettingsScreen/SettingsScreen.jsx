@@ -14,6 +14,22 @@ export default function SettingsScreen({navigation}) {
 
     const onLogOutPress = () => firebase.auth().signOut();
 
+    const [user, setUser] = React.useState({})
+
+    const userId = firebase.auth().currentUser.uid;
+
+    const getUserInfo = () =>{
+        firebase.firestore().collection("users").doc(userId).get()
+            .then((snapshot) => {
+                if (snapshot.exists){
+                    setUser(snapshot.data());
+                }
+            }).catch((error) => console.log(error));
+    }
+
+    React.useEffect(() => {
+        getUserInfo()
+    }, []);
 
     return (
         <SafeAreaView style={{flex: 1}}>
@@ -28,14 +44,14 @@ export default function SettingsScreen({navigation}) {
                     }}
                 />
                 <View style={styles.infoContainer}>
-                    <Text style={styles.text}>Your name</Text>
-                    <Button onPress={() => console.log("Press")} title="EDIT PROFILE" type="clear" titleStyle={styles.button} />
+                    <Text style={styles.text}>{user.fullName}</Text>
+                    <Button onPress={() => console.log("Press")} disabled={true} title="EDIT PROFILE" type="clear" titleStyle={styles.button} />
                 </View>
             </View>
 
             <View style={styles.buttonContainer}>
                 <Text style={styles.buttonText}>Dark mode</Text>
-                <Switch style={styles.switch} value={isSwitchOn} onValueChange={onToggleSwitch} />
+                <Switch style={styles.switch} disabled={true} value={isSwitchOn} onValueChange={onToggleSwitch} />
             </View>
 
             <View style={{flex: 1,justifyContent: 'flex-end'}}>

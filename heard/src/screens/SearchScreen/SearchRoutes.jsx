@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import {SearchScreen, AddOwnAlbum} from "../index";
+import {SearchScreen, AddOwnAlbum, AlbumDetailsScreen} from "../index";
 import {theme} from "../../theme/Theme";
 const SearchStack = createStackNavigator();
 
@@ -16,7 +16,7 @@ function SearchRoutes() {
             }}
         >
             <SearchStack.Screen name="Search" component={SearchScreen}  options={{ title: 'Search' }} />
-
+            <SearchStack.Screen name="AlbumDetails" options={{ title: 'Album Details'}} component={AlbumDetailsScreen}/>
 
         </SearchStack.Navigator>
 

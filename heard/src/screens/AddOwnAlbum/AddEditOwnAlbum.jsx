@@ -1,96 +1,154 @@
 import React from 'react'
-import {FlatList, Image, ScrollView, Text, View} from 'react-native'
+import {FlatList, Image, ScrollView, Text, TouchableOpacity, View} from 'react-native'
 import TrackListItem from "../../components/TrackListItem";
-import {Button, Caption, Card, Subheading, TextInput, Title} from "react-native-paper";
+import {Button, Caption, Card, Paragraph, Subheading, TextInput, Title} from "react-native-paper";
 import styles from "../AddOwnAlbum/styles";
 import {AirbnbRating} from "react-native-ratings";
 import {theme} from "../../theme/Theme";
+import CalendarPicker from "react-native-calendar-picker";
+import moment from "moment";
+import firebase from "firebase";
+import { StackActions } from '@react-navigation/native';
 
 
 
 export default function AddEditOwnAlbum({navigation}) {
 
-    const [albumName, setAlbumName] = React.useState('');
+    const [albumName, setAlbumName] = React.useState("");
 
-    const [artistName, setArtistName] = React.useState('');
+    const [artistName, setArtistName] = React.useState("");
 
-    const [genre, setGenre] = React.useState('');
+    const [genre, setGenre] = React.useState("");
 
-    const [coverImage, setCoverImage] = React.useState('');
+    const [coverImage, setCoverImage] = React.useState("");
 
-    const [release, setRelease] = React.useState('');
-
-    const [trackName, setTrackName] = React.useState('');
-
-    const [feat, setFeat] = React.useState('');
-
-    const [duration, setDuration] = React.useState('');
-
-    const [number, setNumber] = React.useState('');
+    const [release, setRelease] = React.useState("");
 
 
+    const [comment, setComment] = React.useState("");
+    const [rating, setRating] = React.useState(0);
 
-    const [comment, setComment] = React.useState('');
-
-    const [addVisibility, setAddVisibility] = React.useState(true);
+    const [albumNameError, setAlbumNameError] = React.useState(false);
+    const [artistNameError, setArtistNameError] = React.useState(false);
 
     const [saveVisibility, setSaveVisibility] = React.useState(false);
+    const [discardVisibility, setDiscardVisibility] = React.useState(false);
 
     const [disable, setDisable] = React.useState(true);
 
+    const  userId = firebase.auth().currentUser.uid;
 
-    let Album = {
-        title: "",
-        artist: "",
-        genre: "",
-        released: "",
-        cover_image: {uri: "https://img.discogs.com/fN7X7VrZ_X0ATM-xpZ8L6HMoXjM=/fit-in/600x600/filters:strip_icc():format(jpeg):mode_rgb():quality(90)/discogs-images/R-6023735-1409079220-2641.jpeg.jpg"},
-        tracks: [
+    const userCollection =   firebase.firestore().collection("users").doc(userId);
 
-        ]
+
+
+
+    const addAlbum = (type, albumId, thumb) => {
+        userCollection.collection(type).doc(albumId).set(
+            {
+                id: albumId,
+                artists_sort: artistName,
+                title: albumName,
+                thumb: thumb,
+                genres: [genre],
+                released_formatted: release,
+                tracklist: [],
+                rating: rating,
+                comment: comment,
+            }
+        ).catch((error) => {
+            console.log(error);
+        });
     };
 
+    const onSavePressed = () => {
+
+        if(artistName === "" && artistName === ""){
+            setAlbumNameError(true);
+            setArtistNameError(true);
+        }
+        else if (artistName === ""){
+            setArtistNameError(true);
+        }
+        else if( albumName === "" ){
+            setAlbumNameError(true);
+        }
+        else{
+            let randomID = Math.random().toString(36).substring(7);
+            let placeholderThumb = "http://myavatar.pl/wp-content/plugins/woocommerce/assets/images/placeholder.png";
+
+            let thumb;
+
+            if(coverImage === "")
+                thumb = placeholderThumb;
+            else
+                thumb = coverImage;
+
+            if(rating === 0){
+                addAlbum("queue", randomID, thumb);
+            }
+            else if (rating !== 0){
+                addAlbum("queue", randomID, thumb);
+            }
+
+            let Album = {
+                id: randomID,
+                artists_sort: artistName,
+                title: albumName,
+                thumb: thumb,
+                genres: [genre],
+                released_formatted: release,
+                tracklist: [],
+                rating: rating,
+                comment: comment,
+            };
+
+            navigation.dispatch(
+                StackActions.replace('AlbumList')
+            );
+            navigation.navigate("AlbumDetails", {album: Album})
+        }
 
 
-    const renderItem = ({ item }) => {
 
-        return (
-            <TrackListItem
-                item={item}
-            />
-        );
     };
 
-    const renderSeparator = () => (
-        <View
-            style={{
-                backgroundColor: 'rgba(196,196,196,0.8)',
-                height: 1.1,
-                width: "95%",
-                alignSelf: "center"
-            }}
-        />
-    );
+    const clearForm = () => {
+        setComment("");
+        setRating(0);
+        setDiscardVisibility(false)
+        setDisable(true);
+    }
+
+    React.useEffect(() => {
+        let today = new Date();
+        console.log(today)
+        setRelease(moment(today).format("DD MMM YYYY"))
+
+    },[])
 
     return (
         <ScrollView styles={{flex: 1}}  nestedScrollEnabled={false}>
             <Card style={styles.card}>
                 <Caption style={styles.cardTitle}>Basic Information</Caption>
                     <View style={styles.textInputRow}>
-
                         <TextInput
+                            error={albumNameError}
                             label="Album Name"
                             value={albumName}
                             onChangeText={text => setAlbumName(text)}
                         />
+                        { albumNameError && <Text style={{marginTop: 5, color: theme.colors.error}}>This field can't be empty.</Text>}
                     </View>
 
                     <View style={styles.textInputRow}>
                         <TextInput
+                            error={artistNameError}
                             label="Artist"
                             value={artistName}
                             onChangeText={text => setArtistName(text)}
                         />
+                        { artistNameError && <Text style={{marginTop: 5, color: theme.colors.error}}>This field can't be empty.</Text>}
                     </View>
 
                 <View style={styles.textInputRow}>
@@ -100,30 +158,6 @@ export default function AddEditOwnAlbum({navigation}) {
                         onChangeText={text => setGenre(text)}
                     />
                 </View>
-                <View style={styles.textInputRow}>
-                    <TextInput
-                        label="Release Date"
-                        value={release}
-                        onChangeText={text => setRelease(text)}
-                    />
-                </View>
-                <View style={styles.textInputRow}>
-                    <TextInput
-                        label="Cover Image URL"
-                        value={coverImage}
-                        onChangeText={text => setCoverImage(text)}
-                    />
-                </View>
-            </Card>
-
-            <Card style={styles.card}>
-                <Caption style={styles.cardTitle}>Tracks</Caption>
-                <FlatList
-                    data={Album.tracks.sort((a, b) => a.number - b.number)}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.number}
-                    ItemSeparatorComponent={renderSeparator}
-                />
 
                 <View style={styles.textInputRow}>
                     <TextInput
@@ -132,44 +166,68 @@ export default function AddEditOwnAlbum({navigation}) {
                         onChangeText={text => setCoverImage(text)}
                     />
                 </View>
-                <View style={styles.textInputRow}>
-                    <TextInput
-                        label="Cover Image URL"
-                        value={coverImage}
-                        onChangeText={text => setCoverImage(text)}
+
+                <View style={{marginHorizontal: 15, marginVertical: 10}}>
+                    <Text style={{marginBottom: 10, fontSize: 16}}>Release date:</Text>
+                    <CalendarPicker
+                        startFromMonday={true}
+                        previousTitleStyle={styles.pickerButton}
+                        nextTitleStyle = {styles.pickerButton}
+                        scaleFactor={390}
+                        todayBackgroundColor={theme.colors.primary}
+                        selectedDayColor={theme.colors.accent}
+                        selectedDayTextColor={theme.colors.background}
+                        scrollable={false}
+                        onDateChange={(date) => {
+                            setRelease(moment(date).format("DD MMM YYYY"))
+                        }}
                     />
+
                 </View>
 
             </Card>
 
             <Card style={styles.card}>
                 <Caption style={styles.cardTitle}>Review</Caption>
+                <Card.Content>
+                  <Paragraph style={{textAlign: "center"}}>Rate this album or leave empty to add to queue.</Paragraph>
+                </Card.Content>
                 <AirbnbRating
-                    defaultRating={1}
+                    defaultRating={rating}
                     showRating={false}
                     size={30}
                     selectedColor={theme.colors.primary}
                     starContainerStyle={{marginTop: 15}}
-                    onFinishRating={() => setDisable(false)}
+                    onFinishRating={(rating) => {
+                        setRating(rating);
+                        setDiscardVisibility(true);
+                        setDisable(false);
+                    }}
                 />
                 <TextInput
                     style={styles.textInput}
                     label="Comment"
                     value={comment}
                     onChangeText={comment =>{
-                        setComment(comment)
-                        setDisable(false)
+                        setComment(comment);
                     }}
                     mode='outlined'
                     multiline={true}
                     numberOfLines={2}
                     underlineColor={theme.colors.primary}
                 />
-                <Card.Actions style={{marginLeft: "auto", marginRight: 10}}>
-                    { saveVisibility && <Button disabled={disable} >save</Button>}
-                    { addVisibility && <Button disabled={disable} icon="plus" onPress={() => console.log('Pressed')}>Add</Button>}
+
+                <Card.Actions style={{marginLeft: 10, marginRight: "auto"}}>
+                    { discardVisibility && <Button onPress={() => clearForm()} style={{marginLeft: 0, marginRight: "auto"}} >Discard</Button>}
                 </Card.Actions>
+
             </Card>
+
+            <TouchableOpacity
+                style={styles.button}
+                onPress={() => onSavePressed()}>
+                <Text style={styles.buttonTitle}>SAVE</Text>
+            </TouchableOpacity>
         </ScrollView>
     );
 }

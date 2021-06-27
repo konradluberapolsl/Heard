@@ -1,17 +1,17 @@
 import * as React from 'react';
 import { Button, Card, Title, Paragraph } from 'react-native-paper'
 import { StyleSheet} from "react-native";
+import {theme} from "../theme/Theme";
 
-const QueueAlbumItem = ({item, onPress, onLongPress, style}) => (
-    <Card style={styles.item}>
+const QueueAlbumItem = ({item,onPressItem, onPressHeard, onLongPress, borderWidth}) => (
+    <Card onPress={onPressItem} onLongPress={onLongPress}  style={[styles.item, borderWidth] }>
         <Card.Content style={styles.textContainer}>
             <Title style={styles.text} >{item.title}</Title>
-            <Paragraph style={styles.text} >{item.artist}</Paragraph>
+            <Paragraph style={styles.text} >{item.artists_sort}</Paragraph>
         </Card.Content>
-        <Card.Cover style={styles.thumbnail} source={{ uri: 'https://img.discogs.com/3KrlBcMxl3WOliT0TuxV6XgNBUw=/fit-in/600x600/filters:strip_icc()' +
-                ':format(jpeg):mode_rgb():quality(90)/discogs-images/R-6736792-1549154079-2751.jpeg.jpg' }} />
+        <Card.Cover style={styles.thumbnail} source={{ uri: item.thumb }} />
         <Card.Actions style={styles.button}>
-            <Button onPress={onPress} >HEARD</Button>
+            <Button onPress={onPressHeard} >HEARD</Button>
 
         </Card.Actions>
     </Card>
@@ -29,11 +29,13 @@ const styles = StyleSheet.create({
         marginVertical: 8,
         marginHorizontal: 16,
         width: 175,
+        overflow: 'hidden',
         alignItems: "flex-end",
         justifyContent: "center",
         flexDirection: "row",
         marginRight: "auto",
-        marginLeft: "auto"
+        marginLeft: "auto",
+        borderColor: theme.colors.accent,
     },
     textContainer: {
         marginBottom: 10,
@@ -46,6 +48,5 @@ const styles = StyleSheet.create({
     },
     button:{
         alignSelf: "center",
-
     }
 });

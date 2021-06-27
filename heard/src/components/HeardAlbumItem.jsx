@@ -2,17 +2,16 @@ import * as React from 'react';
 import { Button, Card, Title, Paragraph } from 'react-native-paper'
 import { StyleSheet} from "react-native";
 import {AirbnbRating, Rating} from 'react-native-ratings';
+import {theme} from "../theme/Theme";
 
-const HeardAlbumItem = ({item, onPress, style}) => (
-    <Card style={styles.item} onPress={onPress}>
+const HeardAlbumItem = ({item, onLongPress , onPress, borderWidth}) => (
+    <Card style={[styles.item, borderWidth]} onLongPress={onLongPress}  onPress={onPress}>
         <Card.Content style={styles.textContainer}>
             <Title style={styles.text} >{item.title}</Title>
-            <Paragraph style={styles.text} >{item.artist}</Paragraph>
+            <Paragraph style={styles.text} >{item.artists_sort}</Paragraph>
         </Card.Content>
-        <Card.Cover style={styles.thumbnail} source={{ uri: 'https://img.discogs.com/3KrlBcMxl3WOliT0TuxV6XgNBUw=/fit-in/600x600/filters:strip_icc()' +
-                ':format(jpeg):mode_rgb():quality(90)/discogs-images/R-6736792-1549154079-2751.jpeg.jpg' }} />
+        <Card.Cover style={styles.thumbnail} source={{ uri: item.thumb }} />
         <Card.Actions style={styles.button}>
-            {/*<Rating type='custom'  ratingColor='#000' readonly={false} imageSize={32} jumpValue={0.5}/>*/}
             <AirbnbRating defaultRating={item.rating}  showRating={false}  size={25}  selectedColor="#000" isDisabled={true} />
         </Card.Actions>
     </Card>
@@ -29,11 +28,13 @@ const styles = StyleSheet.create({
         padding: 0,
         marginVertical: 8,
          marginRight: "auto",
+        overflow: 'hidden',
         width: 175,
         alignItems: "flex-end",
         justifyContent: "center",
         flexDirection: "row",
-        marginLeft: "auto"
+        marginLeft: "auto",
+        borderColor: theme.colors.accent,
     },
     textContainer: {
         marginBottom: 10,

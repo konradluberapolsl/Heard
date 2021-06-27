@@ -14,6 +14,8 @@ const styles = StyleSheet.create({
     infoContainer: {
         flexDirection: 'column',
         marginTop: 20,
+        justifyContent: "flex-start",
+        alignItems: "flex-start"
 
     },
     text:{

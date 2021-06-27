@@ -1,75 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView, View, FlatList } from 'react-native';
 import { SearchBar } from 'react-native-elements';
-import {Button, Paragraph, Dialog, Portal, TextInput} from 'react-native-paper';
+import {Button, Paragraph, Dialog, Portal, TextInput, ActivityIndicator} from 'react-native-paper';
 import styles from "./styles"
 import SearchHistoryItem from "../../components/SearchHistoryItem";
 import SearchResultItem from "../../components/SearchResultItem";
 import {AirbnbRating} from "react-native-ratings";
 import {theme} from "../../theme/Theme";
-
+import {searchAlbums} from "../../api/searchAlbums"
+import {getAlbum} from "../../api/getAlbum";
 
 export default function SearchScreen({navigation}) {
 
-    const DATA = [
-        {
-            key: 1,
-            title: "2014 Forest Hills Drive",
-            artist: "J. Cole",
-            rating: 5
-        },
-        {
-            key: 2,
-            title: "Silny jak Nigdy",
-            artist: "Gruby Mielzky",
-            rating: 4
-        },
-        {
-            key: 3,
-            title: "Eliminati",
-            artist: "TEDE",
-            rating: 3
-        },
-        {
-            key: 4,
-            title: "2014 Forest Hills Drive",
-            artist: "J. Cole",
-            rating: 4
-        },
-        {
-            key: 5,
-            title: "Silny jak Nigdy",
-            artist: "Gruby Mielzky",
-            rating: 4
-        },
-        {
-            key: 6,
-            title: "Eliminati",
-            artist: "TEDE",
-            rating: 4
-        },
-        {
-            key: 7,
-            title: "2014 Forest Hills Drive",
-            artist: "J. Cole",
-            rating: 4
-        },
-        {
-            key: 8,
-            title: "Silny jak Nigdy",
-            artist: "Gruby Mielzky",
-            rating: 4
-        },
-        {
-            key: 9,
-            title: "Eliminati",
-            artist: "TEDE",
-            rating: 4
-        },
-    ];
+    const [data, setData] = useState([]);
 
-
-
+    const [isLoading, setLoading] = useState(false);
 
     const [search, setSearch] = useState('');
     const [filteredDataSource, setFilteredDataSource] = useState([]);
@@ -84,36 +29,48 @@ export default function SearchScreen({navigation}) {
 
     const [comment, setComment] = React.useState('');
 
+    const fetchAlbums = (query) => {
+        setLoading(true);
+        searchAlbums(query)
+            .then((res) => {
+                setData(res);
+                setLoading(false);
+            })
+            .catch((err) => {
+                setLoading(false);
+            });
+
+    };
+
+    const fetchAlbum = (query) => {
+        setLoading(true)
+        getAlbum(query)
+            .then((res) => {
+                navigation.navigate("AlbumDetails", {album: res})
+                setLoading(false);
+            })
+            .catch((err) => {
+                setLoading(false);
+            });
+    }
 
     const searchFilterFunction = (text) => {
         // Check if searched text is not blank
-        if (text) {
+        if (text !== "") {
+            fetchAlbums(text);
             setSearch(text);
         } else {
-
             setSearch(text);
         }
     };
 
     const renderItem = ({ item }) => {
-
-        if(search !== ""){
-            return (
-                <SearchResultItem
-                    item={item}
-                    onAddPress={showDialog}
-                />
-            );
-        }
-        else{
             return (
                 <SearchHistoryItem
                     item={item}
+                    onPress={() => fetchAlbum(item.id)}
                 />
             );
-        }
-
-
     };
 
 
@@ -129,12 +86,12 @@ export default function SearchScreen({navigation}) {
                     value={search}
                     platform="android"
                     cancelIcon={false}/>
-
-                <FlatList
-                    data={DATA}
+                {isLoading ? <ActivityIndicator style={styles.activityIndicator} size='large'/> : (
+                    <FlatList
+                    data={data}
                     renderItem={renderItem}
-                    keyExtractor={(item) => item.key}
-                />
+                    keyExtractor={(item) => item.id}
+                /> )}
             </View>
 
             <Portal>
